@@ -144,12 +144,17 @@ nav a:hover {
 // NAVIGATION
 function showSection(id) {
     let sections = document.querySelectorAll('.section');
-    sections.forEach(sec => sec.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    sections.forEach(sec => sec.style.display = "none");
+    document.getElementById(id).style.display = "block";
 }
 
-// CHAT FUNCTION
-async function sendMessage() {
+// DEFAULT HOME
+document.addEventListener("DOMContentLoaded", () => {
+    showSection("home");
+});
+
+// CHAT (SMART BOT)
+function sendMessage() {
     let input = document.getElementById("userInput");
     let message = input.value.trim();
 
@@ -173,28 +178,51 @@ async function sendMessage() {
 
     chatBox.scrollTop = chatBox.scrollHeight;
 
-    try {
-        let response = await fetch("https://api.openai.com/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer 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"
-            },
-            body: JSON.stringify({
-                model: "gpt-4o-mini",
-                messages: [
-                    { role: "system", content: "Wewe ni msaidizi wa NICS Technology, jibu kwa Kiswahili." },
-                    { role: "user", content: message }
-                ]
-            })
-        });
+    // AI LIKE RESPONSE
+    setTimeout(() => {
+        botMsg.innerText = getAIResponse(message);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 800);
+}
 
-        let data = await response.json();
-        let reply = data.choices[0].message.content;
 
-        botMsg.innerText = reply;
+// 🧠 AI STYLE RESPONSE
+function getAIResponse(msg) {
+    msg = msg.toLowerCase();
 
-    } ; 
+    if (msg.includes("hello") || msg.includes("mambo") || msg.includes("hi")) {
+        return "Habari 👋 Karibu NICS Technology! Naweza kukusaidia nini leo?";
+    }
+
+    if (msg.includes("website")) {
+        return "Tunatengeneza website za kisasa, zenye chat system, biashara na zaidi. Unahitaji ya aina gani?";
+    }
+
+    if (msg.includes("bei") || msg.includes("price")) {
+        return "Bei inategemea aina ya huduma. Kwa kawaida website huanzia Tsh 50,000 hadi zaidi kulingana na mahitaji.";
+    }
+
+    if (msg.includes("huduma")) {
+        return "Tunatoa huduma za: \n- Website Development \n- IT Support \n- Software Installation \nUngependa ipi?";
+    }
+
+    if (msg.includes("mawasiliano") || msg.includes("contact")) {
+        return "Unaweza kuwasiliana nasi kupitia sehemu ya Contact au kupiga simu moja kwa moja.";
+    }
+
+    if (msg.includes("asante")) {
+        return "Karibu sana 😊 Nipo hapa kukusaidia wakati wowote.";
+    }
+
+    if (msg.includes("nani wewe")) {
+        return "Mimi ni AI chatbot wa NICS Technology 🤖 nipo hapa kukusaidia maswali yako yote.";
+    }
+
+    // DEFAULT AI RESPONSE
+    return "Swali lako ni zuri 👍 Tafadhali eleza zaidi ili niweze kukusaidia vizuri.";
+    }
+
+        
 
 }
 </script>
