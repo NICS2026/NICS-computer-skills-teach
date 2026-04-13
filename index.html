@@ -149,9 +149,9 @@ function showSection(id) {
 }
 
 // CHAT FUNCTION
-function sendMessage() {
+async function sendMessage() {
     let input = document.getElementById("userInput");
-    let message = input.value;
+    let message = input.value.trim();
 
     if (message === "") return;
 
@@ -163,24 +163,39 @@ function sendMessage() {
     userMsg.innerText = message;
     chatBox.appendChild(userMsg);
 
-    // BOT REPLY
+    input.value = "";
+
+    // BOT LOADING
     let botMsg = document.createElement("div");
     botMsg.className = "message bot";
+    botMsg.innerText = "Inaandika...";
+    chatBox.appendChild(botMsg);
 
-    if (message.toLowerCase().includes("bei")) {
-        botMsg.innerText = "Huduma zetu zinaanzia Tsh 50,000 kutegemea na kazi.";
-    } else if (message.toLowerCase().includes("website")) {
-        botMsg.innerText = "Tunatengeneza website za kisasa kabisa 🔥";
-    } else {
-        botMsg.innerText = "Asante kwa kuwasiliana na NICS Technology 😊";
-    }
+    chatBox.scrollTop = chatBox.scrollHeight;
 
-    setTimeout(() => {
-        chatBox.appendChild(botMsg);
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }, 500);
+    try {
+        let response = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer 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"
+            },
+            body: JSON.stringify({
+                model: "gpt-4o-mini",
+                messages: [
+                    { role: "system", content: "Wewe ni msaidizi wa NICS Technology, jibu kwa Kiswahili." },
+                    { role: "user", content: message }
+                ]
+            })
+        });
 
-    input.value = "";
+        let data = await response.json();
+        let reply = data.choices[0].message.content;
+
+        botMsg.innerText = reply;
+
+    } ; 
+
 }
 </script>
 
